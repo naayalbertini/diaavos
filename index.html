@@ -430,12 +430,29 @@
                 <button class="copiar" type="button" id="copiarPix">Copiar PIX</button>
               </div>
 
-              <div class="campo" style="margin-top:18px;">
-                <label for="comprovante">Comprovante do PIX <span class="obrigatorio">*</span></label>
-                <input id="comprovante" name="comprovante" type="file"
-                       accept="image/jpeg,image/png,application/pdf">
-                <span class="ajuda">PDF, JPG ou PNG, com no máximo 5 MB.</span>
+              
+
+
               </div>
+
+              
+              <div class="campo" style="margin-top:18px;">
+                <label>Envio do comprovante</label>
+                <div style="padding:16px;border-radius:12px;background:#eef8ee;border:1px solid #b7dcb8;">
+                  <strong>Após realizar o pagamento, envie o comprovante pelo WhatsApp:</strong>
+                  <br><br>
+                  <a
+                    id="botaoWhatsapp"
+                    href="https://wa.me/5571982002432"
+                    target="_blank"
+                    rel="noopener"
+                    style="display:inline-block;padding:12px 18px;background:#25D366;color:#fff;text-decoration:none;border-radius:10px;font-weight:bold;">
+                    📲 Enviar comprovante pelo WhatsApp
+                  </a>
+                  <p style="margin-top:12px;font-size:.9rem;">
+                    WhatsApp: <strong>(71) 98200-2432</strong>
+                  </p>
+                </div>
               </div>
 
               <div id="avisoDinheiro" hidden style="padding:14px;border-radius:12px;background:#fff8e8;color:#694c20;font-weight:700;">
@@ -455,7 +472,7 @@
             <span>Confirmo que as informações preenchidas estão corretas.</span>
           </label>
 
-          <button class="botao-enviar" id="botaoEnviar" type="submit">Confirmar</button>
+          <button class="botao-enviar" id="botaoEnviar" type="submit">Confirmar participação</button>
           <div class="mensagem" id="mensagem" role="alert" aria-live="polite"></div>
         </form>
       </div>
@@ -483,12 +500,6 @@
       addDoc,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-    import {
-      getStorage,
-      ref,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB0j8iyopQzo0o6h2T9gnRMbmzUbsVfgXA",
@@ -501,7 +512,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
     const form = document.getElementById("formParticipacao");
     const botaoEnviar = document.getElementById("botaoEnviar");
@@ -509,20 +519,17 @@
     const participaSim = document.getElementById("participaSim");
     const participaNao = document.getElementById("participaNao");
     const quantidadeArea = document.getElementById("quantidadeArea");
-    const pagamentoArea = document.getElementById("pagamentoArea");
-    const formaPagamentoArea = document.getElementById("formaPagamentoArea");
-    const formaPagamento = document.getElementById("formaPagamento");
-    const dadosPix = document.getElementById("dadosPix");
-    const avisoDinheiro = document.getElementById("avisoDinheiro");
     const nomesAvosArea = document.getElementById("nomesAvosArea");
     const camposNomesAvos = document.getElementById("camposNomesAvos");
+    const formaPagamentoArea = document.getElementById("formaPagamentoArea");
+    const formaPagamento = document.getElementById("formaPagamento");
+    const pagamentoArea = document.getElementById("pagamentoArea");
+    const dadosPix = document.getElementById("dadosPix");
+    const avisoDinheiro = document.getElementById("avisoDinheiro");
     const valorContribuicao = document.getElementById("valorContribuicao");
     const quantidadeInputs = [...document.querySelectorAll('input[name="quantidade"]')];
-    const comprovante = document.getElementById("comprovante");
     const telefone = document.getElementById("telefone");
-
-    const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "application/pdf"];
-    const LIMITE_ARQUIVO = 5 * 1024 * 1024;
+    const botaoWhatsapp = document.getElementById("botaoWhatsapp");
 
     function mostrarMensagem(texto, tipo = "erro") {
       mensagem.textContent = texto;
@@ -541,9 +548,9 @@
       formaPagamentoArea.hidden = true;
       formaPagamento.value = "";
       formaPagamento.required = false;
+      pagamentoArea.classList.remove("ativo");
       dadosPix.hidden = false;
       avisoDinheiro.hidden = true;
-      pagamentoArea.classList.remove("ativo");
 
       quantidadeInputs.forEach(input => {
         input.checked = false;
@@ -551,9 +558,6 @@
         input.disabled = !ativo;
       });
 
-      comprovante.required = false;
-      comprovante.disabled = !ativo;
-      comprovante.value = "";
       valorContribuicao.textContent = "Contribuição: R$ 0,00";
     }
 
@@ -564,7 +568,9 @@
         const campo = document.createElement("div");
         campo.className = "campo";
         campo.innerHTML = `
-          <label for="avo${i}">Nome do avô/avó ${i} <span class="obrigatorio">*</span></label>
+          <label for="avo${i}">
+            Nome do avô/avó ${i} <span class="obrigatorio">*</span>
+          </label>
           <input
             id="avo${i}"
             name="nomesAvos"
@@ -580,8 +586,24 @@
       nomesAvosArea.hidden = false;
     }
 
-    // Ao abrir a página, quantidade, pagamento e comprovante ficam bloqueados.
+    function atualizarLinkWhatsapp() {
+      if (!botaoWhatsapp) return;
+
+      const responsavel = document.getElementById("responsavel").value.trim();
+      const aluno = document.getElementById("aluno").value.trim();
+      const turma = document.getElementById("turma").value;
+
+      const texto =
+        `Olá! Sou ${responsavel || "responsável pelo aluno"}. ` +
+        `Estou enviando o comprovante do Chá com os Avós do(a) aluno(a) ` +
+        `${aluno || "[nome do aluno]"}, turma ${turma || "[turma]"}.`;
+
+      botaoWhatsapp.href =
+        `https://wa.me/5571982002432?text=${encodeURIComponent(texto)}`;
+    }
+
     definirCamposParticipacao(false);
+    atualizarLinkWhatsapp();
 
     participaSim.addEventListener("change", () => {
       definirCamposParticipacao(true);
@@ -597,14 +619,13 @@
         const valor = quantidade <= 2 ? 15 : 25;
 
         criarCamposNomesAvos(quantidade);
-        valorContribuicao.textContent = `Contribuição: R$ ${valor.toFixed(2).replace(".", ",")}`;
+        valorContribuicao.textContent =
+          `Contribuição: R$ ${valor.toFixed(2).replace(".", ",")}`;
+
         formaPagamentoArea.hidden = false;
         formaPagamento.required = true;
         formaPagamento.value = "";
         pagamentoArea.classList.remove("ativo");
-        comprovante.disabled = true;
-        comprovante.required = false;
-        comprovante.value = "";
       });
     });
 
@@ -615,29 +636,29 @@
       if (forma === "Pix") {
         dadosPix.hidden = false;
         avisoDinheiro.hidden = true;
-        comprovante.disabled = false;
-        comprovante.required = true;
       } else if (forma === "Dinheiro") {
         dadosPix.hidden = true;
         avisoDinheiro.hidden = false;
-        comprovante.required = false;
-        comprovante.disabled = true;
-        comprovante.value = "";
       } else {
         pagamentoArea.classList.remove("ativo");
-        comprovante.required = false;
-        comprovante.disabled = true;
-        comprovante.value = "";
       }
     });
 
-    document.getElementById("copiarPix").addEventListener("click", async (event) => {
+    ["responsavel", "aluno", "turma"].forEach(id => {
+      document.getElementById(id).addEventListener("input", atualizarLinkWhatsapp);
+      document.getElementById(id).addEventListener("change", atualizarLinkWhatsapp);
+    });
+
+    document.getElementById("copiarPix").addEventListener("click", async event => {
       const botao = event.currentTarget;
       const chave = document.getElementById("chavePix").textContent.trim();
+
       try {
         await navigator.clipboard.writeText(chave);
         botao.textContent = "PIX copiado!";
-        setTimeout(() => botao.textContent = "Copiar PIX", 1800);
+        setTimeout(() => {
+          botao.textContent = "Copiar PIX";
+        }, 1800);
       } catch {
         window.prompt("Copie a chave PIX:", chave);
       }
@@ -645,36 +666,19 @@
 
     telefone.addEventListener("input", event => {
       let valor = event.target.value.replace(/\D/g, "").slice(0, 11);
-      if (valor.length > 10) valor = valor.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
-      else if (valor.length > 6) valor = valor.replace(/(\d{2})(\d{4})(\d+)/, "($1) $2-$3");
-      else if (valor.length > 2) valor = valor.replace(/(\d{2})(\d+)/, "($1) $2");
-      else if (valor.length) valor = valor.replace(/(\d{0,2})/, "($1");
+
+      if (valor.length > 10) {
+        valor = valor.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+      } else if (valor.length > 6) {
+        valor = valor.replace(/(\d{2})(\d{4})(\d+)/, "($1) $2-$3");
+      } else if (valor.length > 2) {
+        valor = valor.replace(/(\d{2})(\d+)/, "($1) $2");
+      } else if (valor.length) {
+        valor = valor.replace(/(\d{0,2})/, "($1");
+      }
+
       event.target.value = valor;
     });
-
-    comprovante.addEventListener("change", () => {
-      limparMensagem();
-      const arquivo = comprovante.files[0];
-      if (!arquivo) return;
-
-      if (!TIPOS_PERMITIDOS.includes(arquivo.type)) {
-        comprovante.value = "";
-        mostrarMensagem("O comprovante deve ser PDF, JPG ou PNG.");
-        return;
-      }
-
-      if (arquivo.size > LIMITE_ARQUIVO) {
-        comprovante.value = "";
-        mostrarMensagem("O comprovante deve ter no máximo 5 MB.");
-      }
-    });
-
-    function criarNomeSeguro(nomeOriginal) {
-      const extensao = nomeOriginal.includes(".")
-        ? "." + nomeOriginal.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "")
-        : "";
-      return `${crypto.randomUUID()}${extensao}`;
-    }
 
     form.addEventListener("submit", async event => {
       event.preventDefault();
@@ -682,24 +686,32 @@
 
       if (!form.reportValidity()) return;
 
-      const participacao = document.querySelector('input[name="participacao"]:checked')?.value;
-      const quantidadeSelecionada = document.querySelector('input[name="quantidade"]:checked');
-      const quantidade = participacao === "Sim" ? Number(quantidadeSelecionada?.value) : 0;
-      const valor = participacao === "Sim" ? (quantidade <= 2 ? 15 : 25) : 0;
-      const nomesAvos = participacao === "Sim"
-        ? [...document.querySelectorAll('input[name="nomesAvos"]')].map(input => input.value.trim())
-        : [];
-      const formaPagamentoSelecionada = participacao === "Sim" ? formaPagamento.value : "";
-      const arquivo = comprovante.files[0];
+      const participacao =
+        document.querySelector('input[name="participacao"]:checked')?.value;
 
-      if (participacao === "Sim" && formaPagamentoSelecionada === "Pix" && !arquivo) {
-        mostrarMensagem("Anexe o comprovante do PIX para concluir.");
-        comprovante.focus();
-        return;
-      }
+      const quantidadeSelecionada =
+        document.querySelector('input[name="quantidade"]:checked');
 
-      if (arquivo && (!TIPOS_PERMITIDOS.includes(arquivo.type) || arquivo.size > LIMITE_ARQUIVO)) {
-        mostrarMensagem("O arquivo selecionado não é válido.");
+      const quantidade =
+        participacao === "Sim" ? Number(quantidadeSelecionada?.value) : 0;
+
+      const valor =
+        participacao === "Sim"
+          ? (quantidade <= 2 ? 15 : 25)
+          : 0;
+
+      const nomesAvos =
+        participacao === "Sim"
+          ? [...document.querySelectorAll('input[name="nomesAvos"]')]
+              .map(input => input.value.trim())
+          : [];
+
+      const formaPagamentoSelecionada =
+        participacao === "Sim" ? formaPagamento.value : "";
+
+      if (participacao === "Sim" && !formaPagamentoSelecionada) {
+        mostrarMensagem("Selecione a forma de pagamento.");
+        formaPagamento.focus();
         return;
       }
 
@@ -708,24 +720,6 @@
       mostrarMensagem("Aguarde enquanto salvamos a confirmação.", "info");
 
       try {
-        let comprovanteURL = "";
-        let comprovanteCaminho = "";
-
-        if (arquivo) {
-          const nomeSeguro = criarNomeSeguro(arquivo.name);
-          comprovanteCaminho = `comprovantes/${nomeSeguro}`;
-          const arquivoRef = ref(storage, comprovanteCaminho);
-
-          await uploadBytes(arquivoRef, arquivo, {
-            contentType: arquivo.type,
-            customMetadata: {
-              finalidade: "cha_com_os_avos"
-            }
-          });
-
-          comprovanteURL = await getDownloadURL(arquivoRef);
-        }
-
         await addDoc(collection(db, "cha_dos_avos"), {
           responsavel: document.getElementById("responsavel").value.trim(),
           aluno: document.getElementById("aluno").value.trim(),
@@ -736,28 +730,32 @@
           nomesAvos,
           valor,
           formaPagamento: formaPagamentoSelecionada,
-          statusPagamento: participacao === "Sim" ? "Pendente" : "Não se aplica",
+          statusPagamento:
+            participacao === "Sim" ? "Pendente" : "Não se aplica",
           pagamentoConfirmadoEm: null,
           pagamentoConfirmadoPor: "",
           observacaoFinanceira: "",
-          observacoes: document.getElementById("observacoes").value.trim(),
-          comprovanteURL,
-          comprovanteCaminho,
+          observacoes:
+            document.getElementById("observacoes").value.trim(),
+          comprovanteURL: "",
+          comprovanteCaminho: "",
           evento: "Chá com os Avós 2026",
           criadoEm: serverTimestamp()
         });
 
         document.getElementById("formularioArea").style.display = "none";
         document.getElementById("sucesso").classList.add("ativo");
+
         document.getElementById("textoSucesso").textContent =
           participacao === "Sim"
-            ? "Participação confirmada! O comprovante e os dados foram salvos."
+            ? "Participação confirmada! Se o pagamento for por PIX, envie o comprovante pelo WhatsApp (71) 98200-2432."
             : "A resposta foi registrada. Agradecemos pelo retorno.";
+
         window.scrollTo({ top: 0, behavior: "smooth" });
       } catch (erro) {
         console.error("Erro Firebase:", erro);
         mostrarMensagem(
-          "Não foi possível enviar. Verifique se o Firestore, o Storage e as regras foram ativados no Firebase e tente novamente."
+          "Não foi possível enviar. Verifique as regras do Firestore e tente novamente."
         );
         botaoEnviar.disabled = false;
         botaoEnviar.textContent = "Confirmar participação";
