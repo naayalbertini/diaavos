@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Financeiro | Chá com os Avós</title>
+  <style>
+    :root{--vinho:#7b1d12;--vinho2:#571108;--verde:#157347;--whatsapp:#25d366;--vermelho:#b42318;--amarelo:#946200;--cinza:#667085;--fundo:#f6f4f1;--branco:#fff;--borda:#e5ddd7;--texto:#302a27}
+    *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--texto);background:var(--fundo)}
+    button,input,select,textarea{font:inherit}header{padding:22px 28px;color:#fff;background:linear-gradient(135deg,var(--vinho2),var(--vinho))}
+    header h1{margin:0;font-size:1.45rem}header p{margin:6px 0 0;color:#f5dfd9}main{width:min(1500px,100%);margin:auto;padding:24px}
+    .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.card{padding:18px;border:1px solid var(--borda);border-radius:16px;background:#fff}
+    .card small{color:var(--cinza);font-weight:700}.card strong{display:block;margin-top:8px;font-size:1.75rem}.recebido{color:var(--verde)}
+    .filtros{display:grid;grid-template-columns:2fr repeat(3,1fr) auto;gap:10px;margin:20px 0;padding:15px;border:1px solid var(--borda);border-radius:15px;background:#fff}
+    input,select,textarea{width:100%;padding:12px 13px;border:1px solid var(--borda);border-radius:10px;outline:none;background:#fff}textarea{min-height:90px;resize:vertical}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 11px;border:0;border-radius:9px;font-weight:800;text-decoration:none;cursor:pointer}
+    .btn-outline{border:1px solid var(--borda);background:#fff;color:var(--texto)}.btn-green{background:var(--verde);color:#fff}.btn-red{background:#fff0ef;color:var(--vermelho)}.btn-whatsapp{background:var(--whatsapp);color:#fff}
+    .tabela-area{overflow:auto;border:1px solid var(--borda);border-radius:16px;background:#fff}table{width:100%;min-width:1250px;border-collapse:collapse}
+    th,td{padding:13px;border-bottom:1px solid #eee7e2;text-align:left;vertical-align:top}th{font-size:.8rem;text-transform:uppercase;background:#faf8f6}
+    td small{color:var(--cinza)}td ul{margin:7px 0 0;padding-left:18px}.acoes{display:flex;flex-wrap:wrap;gap:7px}
+    .badge{display:inline-flex;padding:6px 9px;border-radius:999px;font-size:.78rem;font-weight:800}.pendente{color:var(--amarelo);background:#fff3cf}.confirmado{color:var(--verde);background:#e5f6ed}.cancelado{color:var(--vermelho);background:#fff0ef}.nao{color:#475467;background:#f2f4f7}
+    .mensagem{padding:28px;text-align:center;color:var(--cinza)}.erro{color:var(--vermelho);font-weight:700}.oculto{display:none!important}
+    dialog{width:min(720px,calc(100% - 28px));max-height:92vh;padding:0;overflow:auto;border:0;border-radius:20px}dialog::backdrop{background:rgba(35,20,14,.6)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:19px 22px;color:#fff;background:var(--vinho)}.modal-head h2{margin:0;font-size:1.2rem}.fechar{border:0;color:#fff;font-size:28px;background:transparent;cursor:pointer}
+    .modal-body{padding:22px}.grade{display:grid;grid-template-columns:1fr 1fr;gap:14px}.campo{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}.campo label{font-size:.9rem;font-weight:700}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+    footer{padding:20px;color:var(--cinza);text-align:center}
+    @media(max-width:1050px){.cards{grid-template-columns:repeat(2,1fr)}.filtros{grid-template-columns:1fr 1fr}.filtros input{grid-column:1/-1}}
+    @media(max-width:650px){main{padding:14px}.cards,.filtros,.grade{grid-template-columns:1fr}.modal-actions{flex-direction:column}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Chá com os Avós — Controle Financeiro</h1>
+  <p>Escola Traços e Letras • Cobrança, edição e baixa de pagamentos</p>
+</header>
+
+<main>
+  <section class="cards">
+    <article class="card"><small>Famílias participantes</small><strong id="totalFamilias">0</strong></article>
+    <article class="card"><small>Total de avós</small><strong id="totalAvos">0</strong></article>
+    <article class="card"><small>Pagamentos confirmados</small><strong id="totalConfirmados">0</strong></article>
+    <article class="card"><small>Pagamentos pendentes</small><strong id="totalPendentes">0</strong></article>
+    <article class="card"><small>Valor recebido</small><strong id="valorRecebido" class="recebido">R$ 0,00</strong></article>
+  </section>
+
+  <section class="filtros">
+    <input id="busca" type="search" placeholder="Pesquisar aluno, responsável, avô/avó ou telefone">
+    <select id="filtroTurma">
+      <option value="">Todas as turmas</option>
+      <option>Maternal</option><option>Grupo 1</option><option>Grupo 2</option><option>Grupo 3</option>
+      <option>1º Ano</option><option>2º Ano</option><option>3º Ano</option><option>4º Ano</option><option>5º Ano</option>
+    </select>
+    <select id="filtroStatus">
+      <option value="">Todos os status</option>
+      <option>Pendente</option><option>Confirmado</option><option>Cancelado</option><option>Não se aplica</option>
+    </select>
+    <select id="filtroForma">
+      <option value="">Todas as formas</option>
+      <option value="Pix">PIX</option><option value="Dinheiro">Dinheiro</option>
+    </select>
+    <button id="exportar" class="btn btn-outline" type="button">Exportar CSV</button>
+  </section>
+
+  <section class="tabela-area">
+    <table>
+      <thead><tr><th>Aluno/Turma</th><th>Responsável</th><th>Avós</th><th>Pagamento</th><th>Status</th><th>Ações</th></tr></thead>
+      <tbody id="corpoTabela"></tbody>
+    </table>
+    <div id="mensagem" class="mensagem">Carregando informações...</div>
+  </section>
+</main>
+
+<footer><strong>Escola Traços e Letras</strong><br>Desenvolvido por Nay Cordeiro</footer>
+
+<dialog id="modal">
+  <div class="modal-head"><h2>Editar informações</h2><button id="fecharModal" class="fechar" type="button">×</button></div>
+  <form id="formEdicao" class="modal-body">
+    <input id="registroId" type="hidden">
+    <div class="grade">
+      <div class="campo"><label>Nome do aluno</label><input id="editAluno" required></div>
+      <div class="campo"><label>Turma</label>
+        <select id="editTurma" required>
+          <option>Maternal</option><option>Grupo 1</option><option>Grupo 2</option><option>Grupo 3</option>
+          <option>1º Ano</option><option>2º Ano</option><option>3º Ano</option><option>4º Ano</option><option>5º Ano</option>
+        </select>
+      </div>
+      <div class="campo"><label>Responsável</label><input id="editResponsavel" required></div>
+      <div class="campo"><label>Telefone/WhatsApp</label><input id="editTelefone" required></div>
+      <div class="campo"><label>Participação</label><select id="editParticipacao"><option>Sim</option><option>Não</option></select></div>
+      <div class="campo"><label>Quantidade de avós</label><select id="editQuantidade"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+      <div class="campo"><label>Forma de pagamento</label><select id="editForma"><option value="">Não definida</option><option value="Pix">PIX</option><option value="Dinheiro">Dinheiro</option></select></div>
+      <div class="campo"><label>Status</label><select id="editStatus"><option>Pendente</option><option>Confirmado</option><option>Cancelado</option><option>Não se aplica</option></select></div>
+    </div>
+    <div class="campo"><label>Nomes dos avós — um por linha</label><textarea id="editNomes"></textarea></div>
+    <div class="campo"><label>Observações</label><textarea id="editObservacoes"></textarea></div>
+    <div class="campo"><label>Observação financeira</label><textarea id="editObsFinanceira"></textarea></div>
+    <div class="modal-actions">
+      <button id="cancelarModal" class="btn btn-outline" type="button">Cancelar</button>
+      <button class="btn btn-green" type="submit">Salvar alterações</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script>
+"use strict";
+
+const firebaseConfig={
+  apiKey:"AIzaSyB0j8iyopQzo0o6h2T9gnRMbmzUbsVfgXA",
+  authDomain:"fotosmaes-1e861.firebaseapp.com",
+  projectId:"fotosmaes-1e861",
+  storageBucket:"fotosmaes-1e861.firebasestorage.app",
+  messagingSenderId:"653639048099",
+  appId:"1:653639048099:web:716bf946f3c6bf536c5816"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+const colecao=db.collection("cha_dos_avos");
+let registros=[];
+
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const norm=v=>String(v??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const dinheiro=v=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const statusAtual=r=>r.statusPagamento||(r.participacao==="Sim"?"Pendente":"Não se aplica");
+const classe=s=>s==="Confirmado"?"confirmado":s==="Pendente"?"pendente":s==="Cancelado"?"cancelado":"nao";
+
+function whatsappNumero(tel){
+  let n=String(tel||"").replace(/\D/g,"");
+  if(!n)return "";
+  return n.startsWith("55")?n:"55"+n;
+}
+
+function linkCobranca(r){
+  const n=whatsappNumero(r.telefone);
+  if(!n)return "";
+  const nomes=Array.isArray(r.nomesAvos)?r.nomesAvos.join(", "):"";
+  const texto=
+    "Olá, "+(r.responsavel||"responsável")+"! "+
+    "A contribuição do Chá com os Avós do(a) aluno(a) "+(r.aluno||"")+
+    ", turma "+(r.turma||"")+", está pendente no valor de "+dinheiro(r.valor)+". "+
+    (nomes?"Avós informados: "+nomes+". ":"")+
+    "Para PIX, a chave é antonigaudicatu@gmail.com. "+
+    "Após o pagamento, envie o comprovante por este WhatsApp. Obrigada!";
+  return "https://wa.me/"+n+"?text="+encodeURIComponent(texto);
+}
+
+function filtrados(){
+  const busca=norm($("busca").value);
+  const turma=$("filtroTurma").value;
+  const status=$("filtroStatus").value;
+  const forma=$("filtroForma").value;
+  return registros.filter(r=>{
+    const nomes=Array.isArray(r.nomesAvos)?r.nomesAvos.join(" "):"";
+    const texto=norm([r.aluno,r.responsavel,r.telefone,nomes].join(" "));
+    return(!busca||texto.includes(busca))&&(!turma||r.turma===turma)&&(!status||statusAtual(r)===status)&&(!forma||r.formaPagamento===forma);
+  });
+}
+
+function atualizarCards(){
+  const participantes=registros.filter(r=>r.participacao==="Sim");
+  $("totalFamilias").textContent=participantes.length;
+  $("totalAvos").textContent=participantes.reduce((s,r)=>s+Number(r.quantidade||0),0);
+  $("totalConfirmados").textContent=participantes.filter(r=>statusAtual(r)==="Confirmado").length;
+  $("totalPendentes").textContent=participantes.filter(r=>statusAtual(r)==="Pendente").length;
+  $("valorRecebido").textContent=dinheiro(participantes.filter(r=>statusAtual(r)==="Confirmado").reduce((s,r)=>s+Number(r.valor||0),0));
+}
+
+function render(){
+  atualizarCards();
+  const dados=filtrados();
+  const tbody=$("corpoTabela");
+  tbody.innerHTML="";
+
+  if(!dados.length){
+    $("mensagem").className="mensagem";
+    $("mensagem").textContent=registros.length?"Nenhum registro encontrado com esses filtros.":"Nenhuma resposta foi salva ainda.";
+    return;
+  }
+
+  $("mensagem").className="mensagem oculto";
+
+  dados.forEach(r=>{
+    const st=statusAtual(r);
+    const nomes=Array.isArray(r.nomesAvos)?r.nomesAvos:[];
+    const cobrar=st!=="Confirmado"&&r.participacao==="Sim"?linkCobranca(r):"";
+    const tr=document.createElement("tr");
+    tr.innerHTML=
+      "<td><strong>"+esc(r.aluno||"Não informado")+"</strong><br><small>"+esc(r.turma||"Sem turma")+"</small></td>"+
+      "<td>"+esc(r.responsavel||"Não informado")+"<br><small>"+esc(r.telefone||"Sem telefone")+"</small></td>"+
+      "<td><strong>"+Number(r.quantidade||0)+"</strong>"+(nomes.length?"<ul>"+nomes.map(n=>"<li>"+esc(n)+"</li>").join("")+"</ul>":"")+"</td>"+
+      "<td><strong>"+esc(r.formaPagamento||"Não definida")+"</strong><br>"+dinheiro(r.valor)+"</td>"+
+      "<td><span class='badge "+classe(st)+"'>"+esc(st)+"</span></td>"+
+      "<td><div class='acoes'>"+
+        (cobrar?"<a class='btn btn-whatsapp' target='_blank' rel='noopener' href='"+esc(cobrar)+"'>Cobrar no WhatsApp</a>":"")+
+        "<button class='btn btn-outline editar' data-id='"+esc(r.id)+"' type='button'>Editar</button>"+
+        "<button class='btn btn-red excluir' data-id='"+esc(r.id)+"' type='button'>Excluir</button>"+
+      "</div></td>";
+    tbody.appendChild(tr);
+  });
+
+  document.querySelectorAll(".editar").forEach(b=>b.addEventListener("click",()=>abrirEdicao(b.dataset.id)));
+  document.querySelectorAll(".excluir").forEach(b=>b.addEventListener("click",()=>excluirRegistro(b.dataset.id)));
+}
+
+function abrirEdicao(id){
+  const r=registros.find(x=>x.id===id);
+  if(!r)return;
+  $("registroId").value=id;
+  $("editAluno").value=r.aluno||"";
+  $("editTurma").value=r.turma||"Maternal";
+  $("editResponsavel").value=r.responsavel||"";
+  $("editTelefone").value=r.telefone||"";
+  $("editParticipacao").value=r.participacao||"Sim";
+  $("editQuantidade").value=String(r.quantidade||0);
+  $("editForma").value=r.formaPagamento||"";
+  $("editStatus").value=statusAtual(r);
+  $("editNomes").value=Array.isArray(r.nomesAvos)?r.nomesAvos.join("\n"):"";
+  $("editObservacoes").value=r.observacoes||"";
+  $("editObsFinanceira").value=r.observacaoFinanceira||"";
+  $("modal").showModal();
+}
+
+$("formEdicao").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const id=$("registroId").value;
+  const participacao=$("editParticipacao").value;
+  let quantidade=Number($("editQuantidade").value||0);
+  let nomes=$("editNomes").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  let forma=$("editForma").value;
+  let status=$("editStatus").value;
+  let valor=0;
+
+  if(participacao==="Não"){
+    quantidade=0;nomes=[];forma="";status="Não se aplica";valor=0;
+  }else{
+    quantidade=Math.max(1,Math.min(4,quantidade||nomes.length||1));
+    nomes=nomes.slice(0,quantidade);
+    while(nomes.length<quantidade)nomes.push("Não informado");
+    valor=quantidade<=2?15:25;
+    if(status==="Não se aplica")status="Pendente";
+  }
+
+  try{
+    await colecao.doc(id).update({
+      aluno:$("editAluno").value.trim(),
+      turma:$("editTurma").value,
+      responsavel:$("editResponsavel").value.trim(),
+      telefone:$("editTelefone").value.trim(),
+      participacao,
+      quantidade,
+      nomesAvos:nomes,
+      valor,
+      formaPagamento:forma,
+      statusPagamento:status,
+      observacoes:$("editObservacoes").value.trim(),
+      observacaoFinanceira:$("editObsFinanceira").value.trim(),
+      pagamentoConfirmadoEm:status==="Confirmado"?firebase.firestore.FieldValue.serverTimestamp():null,
+      pagamentoConfirmadoPor:status==="Confirmado"?"Painel Administrativo":""
+    });
+    $("modal").close();
+  }catch(err){
+    console.error(err);
+    alert("Erro ao salvar. Publique as regras do Firestore que permitem update.");
+  }
+});
+
+async function excluirRegistro(id){
+  const r=registros.find(x=>x.id===id);
+  if(!r)return;
+  if(!confirm("Excluir o registro de "+(r.aluno||"este aluno")+"? Essa ação não poderá ser desfeita."))return;
+  try{
+    await colecao.doc(id).delete();
+  }catch(err){
+    console.error(err);
+    alert("Erro ao excluir. Publique as regras do Firestore que permitem delete.");
+  }
+}
+
+$("fecharModal").onclick=$("cancelarModal").onclick=()=>$("modal").close();
+["busca","filtroTurma","filtroStatus","filtroForma"].forEach(id=>{
+  $(id).addEventListener(id==="busca"?"input":"change",render);
+});
+
+$("exportar").addEventListener("click",()=>{
+  const linhas=[["Aluno","Turma","Responsável","Telefone","Avós","Quantidade","Forma","Valor","Status"]];
+  filtrados().forEach(r=>linhas.push([
+    r.aluno||"",r.turma||"",r.responsavel||"",r.telefone||"",
+    Array.isArray(r.nomesAvos)?r.nomesAvos.join(" | "):"",
+    r.quantidade||0,r.formaPagamento||"",r.valor||0,statusAtual(r)
+  ]));
+  const csv=linhas.map(l=>l.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";")).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="pagamentos_cha_dos_avos.csv";a.click();
+  URL.revokeObjectURL(url);
+});
+
+// Sem orderBy: mostra também registros antigos que não tenham criadoEm.
+colecao.onSnapshot(snapshot=>{
+  registros=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+  registros.sort((a,b)=>{
+    const ta=a.criadoEm&&a.criadoEm.toMillis?a.criadoEm.toMillis():0;
+    const tb=b.criadoEm&&b.criadoEm.toMillis?b.criadoEm.toMillis():0;
+    return tb-ta;
+  });
+  render();
+},erro=>{
+  console.error("Erro ao ler Firestore:",erro);
+  $("mensagem").className="mensagem erro";
+  $("mensagem").textContent="Não foi possível carregar as informações. Confirme as regras do Firestore e a coleção cha_dos_avos.";
+});
+</script>
+</body>
+</html>
