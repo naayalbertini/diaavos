@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#861d12">
+  <title>Chá com os Avós | Escola Traços e Letras</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --vinho: #861d12;
+      --vinho-escuro: #64150d;
+      --laranja: #f07b22;
+      --verde: #267846;
+      --creme: #fff9f1;
+      --branco: #ffffff;
+      --texto: #342f2c;
+      --texto-suave: #786f69;
+      --borda: #eadfd6;
+      --erro: #b42318;
+      --sucesso: #067647;
+      --sombra: 0 25px 65px rgba(77, 40, 20, 0.14);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      padding: 34px 16px;
+      font-family: "DM Sans", sans-serif;
+      color: var(--texto);
+      background:
+        radial-gradient(circle at 5% 10%, rgba(240, 123, 34, 0.14), transparent 28%),
+        radial-gradient(circle at 94% 12%, rgba(38, 120, 70, 0.13), transparent 26%),
+        linear-gradient(135deg, #fffdf9, #f8f2ea);
+    }
+
+    .pagina {
+      width: min(900px, 100%);
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 28px;
+      box-shadow: var(--sombra);
+      background: var(--branco);
+    }
+
+    .cabecalho {
+      position: relative;
+      overflow: hidden;
+      padding: 35px 42px;
+      color: var(--branco);
+      background: linear-gradient(135deg, rgba(100, 21, 13, .98), rgba(134, 29, 18, .94));
+    }
+
+    .cabecalho::before,
+    .cabecalho::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .cabecalho::before { width: 260px; height: 260px; right: -95px; top: -130px; }
+    .cabecalho::after { width: 150px; height: 150px; right: 55px; bottom: -105px; }
+
+    .cabecalho-conteudo {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 145px 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .logo-caixa {
+      width: 145px;
+      height: 145px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 22px;
+      background: var(--branco);
+      box-shadow: 0 12px 32px rgba(0,0,0,.18);
+    }
+
+    .logo-caixa img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+    .etiqueta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 7px 12px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      font-size: .84rem;
+      font-weight: 700;
+      background: rgba(255,255,255,.1);
+    }
+
+    h1 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(2.25rem, 6vw, 3.9rem);
+      line-height: 1;
+      letter-spacing: -.03em;
+    }
+
+    .subtitulo {
+      max-width: 600px;
+      margin-top: 13px;
+      color: rgba(255,255,255,.87);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .informacoes-evento { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+
+    .informacoes-evento span {
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: .9rem;
+      font-weight: 700;
+      background: rgba(255,255,255,.12);
+    }
+
+    .conteudo { padding: 38px 42px 44px; }
+
+    .aviso {
+      margin-bottom: 30px;
+      padding: 18px 20px;
+      border-left: 5px solid var(--laranja);
+      border-radius: 12px;
+      color: #65472f;
+      background: #fff5e8;
+      line-height: 1.6;
+    }
+
+    .grade { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .campo { display: flex; flex-direction: column; gap: 8px; }
+    .campo.largo { grid-column: 1 / -1; }
+
+    label, legend { font-size: .93rem; font-weight: 700; }
+    .obrigatorio { color: var(--vinho); }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--borda);
+      border-radius: 13px;
+      padding: 14px 15px;
+      font: inherit;
+      color: var(--texto);
+      outline: none;
+      background: #fffdfb;
+      transition: .2s ease;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--vinho);
+      box-shadow: 0 0 0 4px rgba(134,29,18,.1);
+      background: var(--branco);
+    }
+
+    fieldset { border: 0; }
+
+    .opcoes {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 2px;
+    }
+
+    .opcao { position: relative; }
+    .opcao input { position: absolute; opacity: 0; pointer-events: none; }
+
+    .opcao label {
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      border: 1px solid var(--borda);
+      border-radius: 13px;
+      cursor: pointer;
+      background: #fffdfb;
+      transition: .2s ease;
+    }
+
+    .opcao input:checked + label {
+      color: var(--vinho);
+      border-color: var(--vinho);
+      background: #fff0ed;
+      box-shadow: 0 0 0 3px rgba(134,29,18,.08);
+    }
+
+    .pagamento {
+      display: none;
+      grid-column: 1 / -1;
+      padding: 22px;
+      border: 1px solid #d8e8dc;
+      border-radius: 18px;
+      background: #f4faf6;
+    }
+
+    .pagamento.ativo { display: block; animation: aparecer .25s ease; }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .valor { margin-bottom: 15px; color: var(--verde); font-size: 1.25rem; font-weight: 800; }
+    .pix-linha { display: flex; align-items: center; gap: 10px; }
+
+    .pix-chave {
+      flex: 1;
+      overflow-wrap: anywhere;
+      padding: 13px 14px;
+      border: 1px dashed #8db89a;
+      border-radius: 12px;
+      font-weight: 700;
+      background: var(--branco);
+    }
+
+    .copiar {
+      border: 0;
+      border-radius: 11px;
+      padding: 13px 16px;
+      color: var(--branco);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--verde);
+    }
+
+    .ajuda { color: var(--texto-suave); font-size: .82rem; line-height: 1.4; }
+
+    .confirmacao {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 28px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #faf7f4;
+    }
+
+    .confirmacao input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--vinho); }
+
+    .botao-enviar {
+      width: 100%;
+      margin-top: 22px;
+      border: 0;
+      border-radius: 14px;
+      padding: 16px 22px;
+      color: var(--branco);
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--vinho), var(--vinho-escuro));
+      box-shadow: 0 12px 24px rgba(134,29,18,.2);
+      transition: .2s ease;
+    }
+
+    .botao-enviar:hover:not(:disabled) { transform: translateY(-2px); }
+    .botao-enviar:disabled { opacity: .65; cursor: wait; }
+
+    .mensagem {
+      display: none;
+      margin-top: 16px;
+      padding: 13px 15px;
+      border-radius: 11px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .mensagem.erro { display: block; color: var(--erro); background: #fff1f0; border: 1px solid #f8c7c3; }
+    .mensagem.info { display: block; color: #175cd3; background: #eff8ff; border: 1px solid #b2ddff; }
+
+    .rodape {
+      padding: 18px;
+      text-align: center;
+      color: var(--texto-suave);
+      font-size: .84rem;
+      border-top: 1px solid #f0e8e2;
+      background: #fffdfb;
+    }
+
+    .sucesso { display: none; padding: 48px 30px; text-align: center; }
+    .sucesso.ativo { display: block; }
+    .sucesso-icone {
+      width: 78px; height: 78px; margin: 0 auto 18px;
+      display: grid; place-items: center; border-radius: 50%;
+      color: var(--branco); font-size: 2.2rem; background: var(--sucesso);
+    }
+    .sucesso h2 { color: var(--vinho); font-family: "Playfair Display", serif; font-size: 2rem; }
+    .sucesso p { max-width: 540px; margin: 13px auto 0; color: var(--texto-suave); line-height: 1.65; }
+
+    @media (max-width: 680px) {
+      body { padding: 12px; }
+      .pagina { border-radius: 20px; }
+      .cabecalho { padding: 28px 22px; }
+      .cabecalho-conteudo { grid-template-columns: 1fr; text-align: center; }
+      .logo-caixa { width: 125px; height: 125px; margin: 0 auto; }
+      .etiqueta, .informacoes-evento { justify-content: center; }
+      .conteudo { padding: 28px 20px 34px; }
+      .grade { grid-template-columns: 1fr; }
+      .campo.largo, .pagamento { grid-column: auto; }
+      .pix-linha { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="pagina">
+    <section id="formularioArea">
+      <header class="cabecalho">
+        <div class="cabecalho-conteudo">
+          <div class="logo-caixa">
+            <img src="data:image/png;base64,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" alt="Logo da Escola Traços e Letras">
+          </div>
+
+          <div>
+            <div class="etiqueta">Escola Traços e Letras</div>
+            <h1>Chá com os Avós</h1>
+            <p class="subtitulo">
+              Confirme abaixo a participação dos avós neste momento especial preparado pela escola.
+            </p>
+
+            <div class="informacoes-evento">
+              <span>📅 24 de julho</span>
+              <span>🕝 14h30 às 17h30</span>
+              <span>☕ Encontro especial</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="conteudo">
+        <div class="aviso">
+          A contribuição é de <strong>R$ 15,00 para 1 ou 2 avós</strong> e
+          <strong>R$ 25,00 para 3 ou 4 avós</strong>.
+        </div>
+
+        <form id="formParticipacao">
+          <div class="grade">
+            <div class="campo">
+              <label for="responsavel">Nome do responsável <span class="obrigatorio">*</span></label>
+              <input id="responsavel" name="responsavel" type="text" maxlength="120" autocomplete="name" required>
+            </div>
+
+            <div class="campo">
+              <label for="aluno">Nome do aluno <span class="obrigatorio">*</span></label>
+              <input id="aluno" name="aluno" type="text" maxlength="120" required>
+            </div>
+
+            <div class="campo">
+              <label for="turma">Turma <span class="obrigatorio">*</span></label>
+              <select id="turma" name="turma" required>
+                <option value="">Selecione a turma</option>
+                <option>Maternal</option>
+                <option>Grupo 1</option>
+                <option>Grupo 2</option>
+                <option>Grupo 3</option>
+                <option>1º Ano</option>
+                <option>2º Ano</option>
+                <option>3º Ano</option>
+                <option>4º Ano</option>
+                <option>5º Ano</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label for="telefone">Telefone/WhatsApp <span class="obrigatorio">*</span></label>
+              <input id="telefone" name="telefone" type="tel" maxlength="15" autocomplete="tel" required>
+            </div>
+
+            <fieldset class="campo largo">
+              <legend>Os avós participarão? <span class="obrigatorio">*</span></legend>
+              <div class="opcoes">
+                <div class="opcao">
+                  <input type="radio" id="participaSim" name="participacao" value="Sim" required>
+                  <label for="participaSim">Sim, participarão</label>
+                </div>
+                <div class="opcao">
+                  <input type="radio" id="participaNao" name="participacao" value="Não">
+                  <label for="participaNao">Não participarão</label>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="campo largo" id="quantidadeArea" hidden>
+              <legend>Quantidade de avós <span class="obrigatorio">*</span></legend>
+              <div class="opcoes">
+                <div class="opcao"><input type="radio" id="q1" name="quantidade" value="1"><label for="q1">1 avó/avô</label></div>
+                <div class="opcao"><input type="radio" id="q2" name="quantidade" value="2"><label for="q2">2 avós</label></div>
+                <div class="opcao"><input type="radio" id="q3" name="quantidade" value="3"><label for="q3">3 avós</label></div>
+                <div class="opcao"><input type="radio" id="q4" name="quantidade" value="4"><label for="q4">4 avós</label></div>
+              </div>
+            </fieldset>
+
+            <div class="campo largo" id="nomesAvosArea" hidden>
+              <label>Nomes dos avós participantes <span class="obrigatorio">*</span></label>
+              <div id="camposNomesAvos" class="grade"></div>
+              <span class="ajuda">Preencha o nome de cada avô ou avó participante.</span>
+            </div>
+
+            <div class="campo largo" id="formaPagamentoArea" hidden>
+              <label for="formaPagamento">Forma de pagamento <span class="obrigatorio">*</span></label>
+              <select id="formaPagamento" name="formaPagamento">
+                <option value="">Selecione</option>
+                <option value="Pix">PIX</option>
+                <option value="Dinheiro">Dinheiro</option>
+              </select>
+            </div>
+
+            <div class="pagamento" id="pagamentoArea">
+              <div class="valor" id="valorContribuicao">Contribuição: R$ 0,00</div>
+              <div id="dadosPix">
+                <p style="margin-bottom:10px;font-weight:700;">Chave PIX:</p>
+              <div class="pix-linha">
+                <div class="pix-chave" id="chavePix">antonigaudicatu@gmail.com</div>
+                <button class="copiar" type="button" id="copiarPix">Copiar PIX</button>
+              </div>
+
+              <div class="campo" style="margin-top:18px;">
+                <label for="comprovante">Comprovante do PIX <span class="obrigatorio">*</span></label>
+                <input id="comprovante" name="comprovante" type="file"
+                       accept="image/jpeg,image/png,application/pdf">
+                <span class="ajuda">PDF, JPG ou PNG, com no máximo 5 MB.</span>
+              </div>
+              </div>
+
+              <div id="avisoDinheiro" hidden style="padding:14px;border-radius:12px;background:#fff8e8;color:#694c20;font-weight:700;">
+                O pagamento em dinheiro deverá ser entregue diretamente à escola.
+              </div>
+            </div>
+
+            <div class="campo largo">
+              <label for="observacoes">Observações</label>
+              <textarea id="observacoes" name="observacoes" maxlength="500"
+                        placeholder="Informação adicional, caso necessário."></textarea>
+            </div>
+          </div>
+
+          <label class="confirmacao">
+            <input type="checkbox" id="confirmar" required>
+            <span>Confirmo que as informações preenchidas estão corretas.</span>
+          </label>
+
+          <button class="botao-enviar" id="botaoEnviar" type="submit">Confirmar participação</button>
+          <div class="mensagem" id="mensagem" role="alert" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="sucesso" id="sucesso">
+      <div class="sucesso-icone">✓</div>
+      <h2>Resposta registrada!</h2>
+      <p id="textoSucesso">
+        Agradecemos pela confirmação. A resposta foi salva com segurança.
+      </p>
+    </section>
+
+    <footer class="rodape">
+      <strong>Escola Traços e Letras</strong><br>
+      Desenvolvido por Nay Cordeiro
+    </footer>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0j8iyopQzo0o6h2T9gnRMbmzUbsVfgXA",
+      authDomain: "fotosmaes-1e861.firebaseapp.com",
+      projectId: "fotosmaes-1e861",
+      storageBucket: "fotosmaes-1e861.firebasestorage.app",
+      messagingSenderId: "653639048099",
+      appId: "1:653639048099:web:716bf946f3c6bf536c5816"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const form = document.getElementById("formParticipacao");
+    const botaoEnviar = document.getElementById("botaoEnviar");
+    const mensagem = document.getElementById("mensagem");
+    const participaSim = document.getElementById("participaSim");
+    const participaNao = document.getElementById("participaNao");
+    const quantidadeArea = document.getElementById("quantidadeArea");
+    const pagamentoArea = document.getElementById("pagamentoArea");
+    const formaPagamentoArea = document.getElementById("formaPagamentoArea");
+    const formaPagamento = document.getElementById("formaPagamento");
+    const dadosPix = document.getElementById("dadosPix");
+    const avisoDinheiro = document.getElementById("avisoDinheiro");
+    const nomesAvosArea = document.getElementById("nomesAvosArea");
+    const camposNomesAvos = document.getElementById("camposNomesAvos");
+    const valorContribuicao = document.getElementById("valorContribuicao");
+    const quantidadeInputs = [...document.querySelectorAll('input[name="quantidade"]')];
+    const comprovante = document.getElementById("comprovante");
+    const telefone = document.getElementById("telefone");
+
+    const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "application/pdf"];
+    const LIMITE_ARQUIVO = 5 * 1024 * 1024;
+
+    function mostrarMensagem(texto, tipo = "erro") {
+      mensagem.textContent = texto;
+      mensagem.className = `mensagem ${tipo}`;
+    }
+
+    function limparMensagem() {
+      mensagem.textContent = "";
+      mensagem.className = "mensagem";
+    }
+
+    function definirCamposParticipacao(ativo) {
+      quantidadeArea.hidden = !ativo;
+      nomesAvosArea.hidden = true;
+      camposNomesAvos.innerHTML = "";
+      formaPagamentoArea.hidden = true;
+      formaPagamento.value = "";
+      formaPagamento.required = false;
+      dadosPix.hidden = false;
+      avisoDinheiro.hidden = true;
+      pagamentoArea.classList.remove("ativo");
+
+      quantidadeInputs.forEach(input => {
+        input.checked = false;
+        input.required = ativo;
+        input.disabled = !ativo;
+      });
+
+      comprovante.required = false;
+      comprovante.disabled = !ativo;
+      comprovante.value = "";
+      valorContribuicao.textContent = "Contribuição: R$ 0,00";
+    }
+
+    function criarCamposNomesAvos(quantidade) {
+      camposNomesAvos.innerHTML = "";
+
+      for (let i = 1; i <= quantidade; i++) {
+        const campo = document.createElement("div");
+        campo.className = "campo";
+        campo.innerHTML = `
+          <label for="avo${i}">Nome do avô/avó ${i} <span class="obrigatorio">*</span></label>
+          <input
+            id="avo${i}"
+            name="nomesAvos"
+            type="text"
+            maxlength="120"
+            placeholder="Digite o nome completo"
+            required
+          >
+        `;
+        camposNomesAvos.appendChild(campo);
+      }
+
+      nomesAvosArea.hidden = false;
+    }
+
+    // Ao abrir a página, quantidade, pagamento e comprovante ficam bloqueados.
+    definirCamposParticipacao(false);
+
+    participaSim.addEventListener("change", () => {
+      definirCamposParticipacao(true);
+    });
+
+    participaNao.addEventListener("change", () => {
+      definirCamposParticipacao(false);
+    });
+
+    quantidadeInputs.forEach(input => {
+      input.addEventListener("change", () => {
+        const quantidade = Number(input.value);
+        const valor = quantidade <= 2 ? 15 : 25;
+
+        criarCamposNomesAvos(quantidade);
+        valorContribuicao.textContent = `Contribuição: R$ ${valor.toFixed(2).replace(".", ",")}`;
+        formaPagamentoArea.hidden = false;
+        formaPagamento.required = true;
+        formaPagamento.value = "";
+        pagamentoArea.classList.remove("ativo");
+        comprovante.disabled = true;
+        comprovante.required = false;
+        comprovante.value = "";
+      });
+    });
+
+    formaPagamento.addEventListener("change", () => {
+      const forma = formaPagamento.value;
+      pagamentoArea.classList.toggle("ativo", Boolean(forma));
+
+      if (forma === "Pix") {
+        dadosPix.hidden = false;
+        avisoDinheiro.hidden = true;
+        comprovante.disabled = false;
+        comprovante.required = true;
+      } else if (forma === "Dinheiro") {
+        dadosPix.hidden = true;
+        avisoDinheiro.hidden = false;
+        comprovante.required = false;
+        comprovante.disabled = true;
+        comprovante.value = "";
+      } else {
+        pagamentoArea.classList.remove("ativo");
+        comprovante.required = false;
+        comprovante.disabled = true;
+        comprovante.value = "";
+      }
+    });
+
+    document.getElementById("copiarPix").addEventListener("click", async (event) => {
+      const botao = event.currentTarget;
+      const chave = document.getElementById("chavePix").textContent.trim();
+      try {
+        await navigator.clipboard.writeText(chave);
+        botao.textContent = "PIX copiado!";
+        setTimeout(() => botao.textContent = "Copiar PIX", 1800);
+      } catch {
+        window.prompt("Copie a chave PIX:", chave);
+      }
+    });
+
+    telefone.addEventListener("input", event => {
+      let valor = event.target.value.replace(/\D/g, "").slice(0, 11);
+      if (valor.length > 10) valor = valor.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+      else if (valor.length > 6) valor = valor.replace(/(\d{2})(\d{4})(\d+)/, "($1) $2-$3");
+      else if (valor.length > 2) valor = valor.replace(/(\d{2})(\d+)/, "($1) $2");
+      else if (valor.length) valor = valor.replace(/(\d{0,2})/, "($1");
+      event.target.value = valor;
+    });
+
+    comprovante.addEventListener("change", () => {
+      limparMensagem();
+      const arquivo = comprovante.files[0];
+      if (!arquivo) return;
+
+      if (!TIPOS_PERMITIDOS.includes(arquivo.type)) {
+        comprovante.value = "";
+        mostrarMensagem("O comprovante deve ser PDF, JPG ou PNG.");
+        return;
+      }
+
+      if (arquivo.size > LIMITE_ARQUIVO) {
+        comprovante.value = "";
+        mostrarMensagem("O comprovante deve ter no máximo 5 MB.");
+      }
+    });
+
+    function criarNomeSeguro(nomeOriginal) {
+      const extensao = nomeOriginal.includes(".")
+        ? "." + nomeOriginal.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "")
+        : "";
+      return `${crypto.randomUUID()}${extensao}`;
+    }
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      limparMensagem();
+
+      if (!form.reportValidity()) return;
+
+      const participacao = document.querySelector('input[name="participacao"]:checked')?.value;
+      const quantidadeSelecionada = document.querySelector('input[name="quantidade"]:checked');
+      const quantidade = participacao === "Sim" ? Number(quantidadeSelecionada?.value) : 0;
+      const valor = participacao === "Sim" ? (quantidade <= 2 ? 15 : 25) : 0;
+      const nomesAvos = participacao === "Sim"
+        ? [...document.querySelectorAll('input[name="nomesAvos"]')].map(input => input.value.trim())
+        : [];
+      const formaPagamentoSelecionada = participacao === "Sim" ? formaPagamento.value : "";
+      const arquivo = comprovante.files[0];
+
+      if (participacao === "Sim" && formaPagamentoSelecionada === "Pix" && !arquivo) {
+        mostrarMensagem("Anexe o comprovante do PIX para concluir.");
+        comprovante.focus();
+        return;
+      }
+
+      if (arquivo && (!TIPOS_PERMITIDOS.includes(arquivo.type) || arquivo.size > LIMITE_ARQUIVO)) {
+        mostrarMensagem("O arquivo selecionado não é válido.");
+        return;
+      }
+
+      botaoEnviar.disabled = true;
+      botaoEnviar.textContent = "Enviando...";
+      mostrarMensagem("Aguarde enquanto salvamos a confirmação.", "info");
+
+      try {
+        let comprovanteURL = "";
+        let comprovanteCaminho = "";
+
+        if (arquivo) {
+          const nomeSeguro = criarNomeSeguro(arquivo.name);
+          comprovanteCaminho = `comprovantes/${nomeSeguro}`;
+          const arquivoRef = ref(storage, comprovanteCaminho);
+
+          await uploadBytes(arquivoRef, arquivo, {
+            contentType: arquivo.type,
+            customMetadata: {
+              finalidade: "cha_com_os_avos"
+            }
+          });
+
+          comprovanteURL = await getDownloadURL(arquivoRef);
+        }
+
+        await addDoc(collection(db, "cha_dos_avos"), {
+          responsavel: document.getElementById("responsavel").value.trim(),
+          aluno: document.getElementById("aluno").value.trim(),
+          turma: document.getElementById("turma").value,
+          telefone: telefone.value.trim(),
+          participacao,
+          quantidade,
+          nomesAvos,
+          valor,
+          formaPagamento: formaPagamentoSelecionada,
+          statusPagamento: participacao === "Sim" ? "Pendente" : "Não se aplica",
+          pagamentoConfirmadoEm: null,
+          pagamentoConfirmadoPor: "",
+          observacaoFinanceira: "",
+          observacoes: document.getElementById("observacoes").value.trim(),
+          comprovanteURL,
+          comprovanteCaminho,
+          evento: "Chá com os Avós 2026",
+          criadoEm: serverTimestamp()
+        });
+
+        document.getElementById("formularioArea").style.display = "none";
+        document.getElementById("sucesso").classList.add("ativo");
+        document.getElementById("textoSucesso").textContent =
+          participacao === "Sim"
+            ? "Participação confirmada! O comprovante e os dados foram salvos."
+            : "A resposta foi registrada. Agradecemos pelo retorno.";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (erro) {
+        console.error("Erro Firebase:", erro);
+        mostrarMensagem(
+          "Não foi possível enviar. Verifique se o Firestore, o Storage e as regras foram ativados no Firebase e tente novamente."
+        );
+        botaoEnviar.disabled = false;
+        botaoEnviar.textContent = "Confirmar participação";
+      }
+    });
+  </script>
+</body>
+</html>
